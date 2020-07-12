@@ -7,9 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import init, { greet } from './wasm/game_of_life_wasm.js';
+import init from './wasm/game_of_life_wasm.js';
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
     yield init();
-    greet();
 });
-run();
+run()
+    .catch(() => console.log('Error running app.'));
