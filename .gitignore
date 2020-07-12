@@ -1,2 +1,7 @@
 /target
 Cargo.lock
+**/*.rs.bk
+bin/
+static/js/pkg/
+export/
+wasm-pack.log
