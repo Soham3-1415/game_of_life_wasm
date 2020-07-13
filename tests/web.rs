@@ -7,7 +7,7 @@ extern crate wasm_bindgen_test;
 
 use wasm_bindgen_test::*;
 
-use game_of_life_wasm::{CellCollection, CellState};
+use game_of_life_wasm::CellCollection;
 
 wasm_bindgen_test_configure!(run_in_browser);
 
