@@ -198,6 +198,10 @@ impl CellCollection {
 		self.write_cell_state(row, column, !self[(row, column)])
 	}
 
+	pub fn read_cell_state(&mut self, row: u16, column: u16) -> CellState {
+		self[(row, column)]
+	}
+
 	pub fn write_cell_state(&mut self, row: u16, column: u16, cell_state: CellState) {
 		let (byte, bit) = self.bit_byte_index(row, column);
 		let mask = !(1 << bit);
