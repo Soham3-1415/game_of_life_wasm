@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-NAME=game_of_life_wasm
 WASM_DIR_NAME=wasm
 WASM_BUILD_DIR=static/js/"$WASM_DIR_NAME"
 
@@ -26,7 +25,7 @@ cp static/bootstrap/css/*.min.css export/bootstrap/css/
 cp static/bootstrap/js/*.min.js export/bootstrap/js/
 
 mkdir export/js/"$WASM_DIR_NAME"
-cp "$WASM_BUILD_DIR"/"$NAME".js "$WASM_BUILD_DIR"/"$NAME"_bg.wasm export/js/"$WASM_DIR_NAME"/
+cp "$WASM_BUILD_DIR"/*.js "$WASM_BUILD_DIR"/*.wasm export/js/"$WASM_DIR_NAME"/
 
 brotli -k export/*.html
 brotli -k export/errors/*.html
