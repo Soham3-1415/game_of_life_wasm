@@ -3,7 +3,6 @@ extern crate wasm_bindgen;
 use wasm_bindgen::__rt::core::fmt::{self, Debug, Formatter};
 use wasm_bindgen::__rt::core::ops::{Index, Not};
 use wasm_bindgen::prelude::*;
-use wasm_bindgen::__rt::core::iter::StepBy;
 
 const BITS_IN_BYTE: u8 = 8;
 
