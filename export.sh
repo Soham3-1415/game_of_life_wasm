@@ -46,6 +46,3 @@ gzip -k export/js/"$WASM_DIR_NAME"/*.js
 
 gzip -k export/bootstrap/css/*.css
 gzip -k export/bootstrap/js/*.js
-
-ssh projects "rm -r /var/www/testapp/web/*"
-scp -r export/* projects:/var/www/testapp/web/
