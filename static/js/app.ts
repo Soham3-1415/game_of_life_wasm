@@ -24,9 +24,14 @@ gameCanvas.width = (CELL_SIZE + 1) * WIDTH + 1;
 
 const canvasContext = gameCanvas.getContext('2d');
 
-let animationFrame: number = null;
+let animationFrame: number = 0;
+let lastFrame: DOMHighResTimeStamp = 0;
+let timeThreshold: number = 0;
 const renderLoop: FrameRequestCallback = (timestamp: DOMHighResTimeStamp): void => {
-    jsBoard.renderNextTick();
+    if (timestamp - lastFrame >= timeThreshold) {
+        lastFrame = timestamp;
+        jsBoard.renderNextTick();
+    }
 
     animationFrame = requestAnimationFrame(renderLoop);
 };
@@ -49,12 +54,12 @@ const pausePlayToggle = (): void => {
     stateBtnManager.toggle_pause_play();
 };
 
-const stepTick = ():void => {
+const stepTick = (): void => {
     jsBoard.renderNextTick();
 }
 
 const rangeUpdate = (): void => {
-
+    timeThreshold = 500 - parseInt(speedRange.value) * 5;
 };
 
 
