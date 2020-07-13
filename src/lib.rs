@@ -4,6 +4,8 @@ use wasm_bindgen::__rt::core::fmt::{self, Debug, Formatter};
 use wasm_bindgen::__rt::core::ops::{Index, Not};
 use wasm_bindgen::prelude::*;
 
+mod utils;
+
 const BITS_IN_BYTE: u8 = 8;
 
 const DEFAULT_WIDTH: u16 = 64;
@@ -13,12 +15,10 @@ const DEFAULT_HEIGHT: u16 = 64;
 pub struct CellCollection {
 	cells: Vec<u8>,
 	temp_state: Vec<u8>,
-	live_neighbor_count: Vec<u8>,
 	height: u16,
 	width: u16,
 	toggle_x: Vec<u16>,
 	toggle_y: Vec<u16>,
-	toggle_updates: u32,
 }
 
 impl Eq for CellCollection {}
@@ -139,6 +139,8 @@ pub enum CellState {
 #[wasm_bindgen]
 impl CellCollection {
 	pub fn new(height: u16, width: u16) -> Self {
+		utils::set_panic_hook();
+
 		let cells = height as u32 * width as u32;
 		let mut bytes = cells / 8;
 		if cells % 8 > 0 {
@@ -148,12 +150,10 @@ impl CellCollection {
 		CellCollection {
 			cells: vec![0; bytes as usize],
 			temp_state: vec![0; bytes as usize],
-			live_neighbor_count: vec![0; cells as usize],
 			height,
 			width,
 			toggle_x: Vec::new(),
 			toggle_y: Vec::new(),
-			toggle_updates: 0,
 		}
 	}
 
@@ -170,7 +170,7 @@ impl CellCollection {
 	}
 
 	pub fn toggle_updates(&self) -> u32 {
-		self.toggle_updates
+		self.toggle_x.len() as u32
 	}
 
 	pub fn height(&self) -> u16 {
@@ -182,7 +182,24 @@ impl CellCollection {
 	}
 
 	pub fn tick(&mut self) {
-		unimplemented!()
+		self.toggle_x.clear();
+		self.toggle_y.clear();
+
+		for row in 0..self.height {
+			for column in 0..self.width {
+				let old_state = self.read_cell_state(row, column);
+				let live_neighbors = self.live_neighbor_count(row, column);
+				let new_state = old_state.apply_rules(live_neighbors);
+
+				let (byte, bit) = self.bit_byte_index(row, column);
+				Self::write_cell_state_to_vec(byte, bit, new_state, &mut self.temp_state);
+
+				if new_state != old_state {
+					self.toggle_x.push(row);
+					self.toggle_y.push(column);
+				}
+			}
+		}
 	}
 
 	pub fn activate_cell(&mut self, row: u16, column: u16) {
@@ -203,17 +220,21 @@ impl CellCollection {
 
 	pub fn write_cell_state(&mut self, row: u16, column: u16, cell_state: CellState) {
 		let (byte, bit) = self.bit_byte_index(row, column);
+		Self::write_cell_state_to_vec(byte, bit, cell_state, &mut self.cells)
+	}
+}
+
+impl CellCollection {
+	fn write_cell_state_to_vec(byte: u32, bit: u8, cell_state: CellState, vec: &mut [u8]) {
 		let mask = !(1 << bit);
 		let dat = match cell_state {
 			CellState::ALIVE => 1,
 			CellState::DEAD => 0,
 		} << bit;
 
-		self.cells[byte as usize] = (self.cells[byte as usize] & mask) + dat;
+		vec[byte as usize] = (vec[byte as usize] & mask) + dat;
 	}
-}
 
-impl CellCollection {
 	fn state_from_bit_byte(&self, byte: u32, bit: u8) -> &CellState {
 		if self.cells[byte as usize] & (1 << bit) != 0 {
 			&CellState::ALIVE
