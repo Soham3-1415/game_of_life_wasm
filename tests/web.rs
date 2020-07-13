@@ -36,7 +36,7 @@ fn simple_tick_test() {
 	}
 	for row in 0..height {
 		for &column in [2u16, 6, 9, 11, 13, 15, 18].iter() {
-			game.kill_cell(row, column);
+			expected_game.kill_cell(row, column);
 		}
 	}
 
