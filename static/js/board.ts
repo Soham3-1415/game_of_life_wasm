@@ -36,7 +36,7 @@ export class Board {
         this.rustBoard.activate_cell(2, 2);
     }
 
-    render():void {
+    renderNextTick():void {
         this.rustBoard.tick();
         this.drawAllCells();
     }
