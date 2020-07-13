@@ -231,7 +231,7 @@ impl CellCollection {
 		let mask = !(1 << bit);
 		let dat = (cell_state as u8) << bit;
 
-		vec[byte as usize] = (vec[byte as usize] & mask) + dat;
+		vec[byte as usize] = (vec[byte as usize] & mask) | dat;
 	}
 
 	fn state_from_bit_byte(&self, byte: u32, bit: u8) -> &CellState {
