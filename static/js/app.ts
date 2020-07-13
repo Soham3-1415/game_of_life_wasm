@@ -2,7 +2,7 @@ import init, {CellCollection} from './wasm/game_of_life_wasm.js';
 import {Board} from "./board.js";
 
 const CELL_SIZE: number = 8; // px
-const WIDTH: number = 64; // cells
+const WIDTH: number = 128; // cells
 const HEIGHT: number = 64; // cells
 const GRID_COLOR: string = '#343a40';
 const DEAD_COLOR: string = '#f8f9fa';
@@ -19,21 +19,24 @@ gameCanvas.width = (CELL_SIZE + 1) * WIDTH + 1;
 const canvasContext = gameCanvas.getContext('2d');
 
 
-const renderLoop: FrameRequestCallback = (): void => {
+const renderLoop = (timestamp: DOMHighResTimeStamp, jsBoard: Board): void => {
+    jsBoard.render();
 
-
-    requestAnimationFrame(renderLoop);
+    requestAnimationFrame((timestamp: DOMHighResTimeStamp) => {
+        renderLoop(timestamp, jsBoard);
+    });
 };
 
 const run = async (): Promise<void> => {
     const wasm = await init();
 
-    const rustBoard = CellCollection.new(HEIGHT, WIDTH);
-    const jsBoard = new Board(wasm, HEIGHT, WIDTH, rustBoard, GRID_COLOR, DEAD_COLOR, ALIVE_COLOR, CELL_SIZE, canvasContext);
+    const jsBoard = new Board(wasm, HEIGHT, WIDTH, GRID_COLOR, DEAD_COLOR, ALIVE_COLOR, CELL_SIZE, canvasContext);
     jsBoard.drawGrid();
     jsBoard.drawAllCells();
 
-    requestAnimationFrame(renderLoop);
+    requestAnimationFrame((timestamp: DOMHighResTimeStamp) => {
+        renderLoop(timestamp, jsBoard);
+    });
 };
 
 

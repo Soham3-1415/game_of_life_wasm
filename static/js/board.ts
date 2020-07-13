@@ -13,13 +13,13 @@ export class Board {
     private readonly cellSize: number;
     private readonly canvasContext: CanvasRenderingContext2D;
 
-    constructor(wasm: InitOutput, height: number, width: number, gameBoard: CellCollection, gridColor: string, deadColor: string, aliveColor: string, cellSize: number, canvasContext: CanvasRenderingContext2D) {
+    constructor(wasm: InitOutput, height: number, width: number, gridColor: string, deadColor: string, aliveColor: string, cellSize: number, canvasContext: CanvasRenderingContext2D) {
         this.memory = wasm.memory;
 
         this.width = width;
         this.height = height;
 
-        this.rustBoard = gameBoard;
+        this.rustBoard = CellCollection.new(this.height, this.width);
         this.cells = new Uint8Array(this.memory.buffer, this.rustBoard.cells(), this.width * this.height);
 
         this.gridColor = gridColor;
@@ -28,6 +28,17 @@ export class Board {
 
         this.cellSize = cellSize;
         this.canvasContext = canvasContext;
+
+        this.rustBoard.activate_cell(0, 2);
+        this.rustBoard.activate_cell(1, 0);
+        this.rustBoard.activate_cell(1, 2);
+        this.rustBoard.activate_cell(2, 1);
+        this.rustBoard.activate_cell(2, 2);
+    }
+
+    render():void {
+        this.rustBoard.tick();
+        this.drawAllCells();
     }
 
     private toggle_x(): Uint16Array {
@@ -48,7 +59,7 @@ export class Board {
         this.canvasContext.beginPath();
 
         for (let row = 0; row < this.height; row++) {
-            for (let column = 0; column < this.height; column++) {
+            for (let column = 0; column < this.width; column++) {
                 let state: CellState = this.rustBoard.read_cell_state(row, column);
 
                 this.canvasContext.fillStyle = state === CellState.DEAD
