@@ -229,10 +229,7 @@ impl CellCollection {
 impl CellCollection {
 	fn write_cell_state_to_vec(byte: u32, bit: u8, cell_state: CellState, vec: &mut [u8]) {
 		let mask = !(1 << bit);
-		let dat = match cell_state {
-			CellState::ALIVE => 1,
-			CellState::DEAD => 0,
-		} << bit;
+		let dat = (cell_state as u8) << bit;
 
 		vec[byte as usize] = (vec[byte as usize] & mask) + dat;
 	}
