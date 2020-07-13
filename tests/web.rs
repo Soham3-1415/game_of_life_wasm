@@ -13,7 +13,7 @@ wasm_bindgen_test_configure!(run_in_browser);
 
 #[wasm_bindgen_test]
 fn simple_tick_test() {
-	let mut game = CellCollection::new(10, 10);
+	let mut game = CellCollection::new(20, 20);
 	let width = game.width();
 	let height = game.height();
 	for row in 0..height {
@@ -28,14 +28,14 @@ fn simple_tick_test() {
 		game.tick();
 	}
 
-	let mut expected_game = CellCollection::new(10, 10);
+	let mut expected_game = CellCollection::new(20, 20);
 	for row in 0..height {
 		for column in 0..width {
 			expected_game.activate_cell(row, column);
 		}
 	}
 	for row in 0..height {
-		for &column in [2u16, 6, 911, 13, 15, 18].iter() {
+		for &column in [2u16, 6, 9, 11, 13, 15, 18].iter() {
 			game.kill_cell(row, column);
 		}
 	}
