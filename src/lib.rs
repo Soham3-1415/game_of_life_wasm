@@ -200,6 +200,8 @@ impl CellCollection {
 				}
 			}
 		}
+
+		std::mem::swap(&mut self.temp_state, &mut self.cells);
 	}
 
 	pub fn activate_cell(&mut self, row: u16, column: u16) {
