@@ -1,5 +1,29 @@
 import {CellCollection, CellState, InitOutput} from './wasm/game_of_life_wasm.js';
 
+export class InitialBoardState {
+    private readonly rowPositions: number[];
+    private readonly columnPositions: number[];
+    private readonly rowOffset: number;
+    private readonly columnOffset: number;
+
+    constructor(rowPositions: number[], columnPositions: number[], rowOffset: number, columnOffset: number) {
+        this.rowPositions = rowPositions;
+        this.columnPositions = columnPositions;
+        this.rowOffset = rowOffset;
+        this.columnOffset = columnOffset;
+    }
+
+    static empty(): InitialBoardState {
+        return new InitialBoardState([], [], 0, 0);
+    }
+
+    init(rustBoard: CellCollection): void {
+        for (let i = 0; i < this.rowPositions.length; i++) {
+            rustBoard.activate_cell(this.rowPositions[i] + this.rowOffset, this.columnPositions[i] + this.columnOffset);
+        }
+    }
+}
+
 export class Board {
     private readonly memory: WebAssembly.Memory;
 
@@ -13,7 +37,8 @@ export class Board {
     private readonly cellSize: number;
     private readonly canvasContext: CanvasRenderingContext2D;
 
-    constructor(wasm: InitOutput, height: number, width: number, gridColor: string, deadColor: string, aliveColor: string, cellSize: number, canvasContext: CanvasRenderingContext2D) {
+    constructor(wasm: InitOutput, height: number, width: number, gridColor: string, deadColor: string, aliveColor: string, cellSize: number, canvasContext: CanvasRenderingContext2D,
+                initialBoardState: InitialBoardState = InitialBoardState.empty()) {
         this.memory = wasm.memory;
 
         this.width = width;
@@ -29,11 +54,7 @@ export class Board {
         this.cellSize = cellSize;
         this.canvasContext = canvasContext;
 
-        this.rustBoard.activate_cell(0, 2);
-        this.rustBoard.activate_cell(1, 0);
-        this.rustBoard.activate_cell(1, 2);
-        this.rustBoard.activate_cell(2, 1);
-        this.rustBoard.activate_cell(2, 2);
+        initialBoardState.init(this.rustBoard);
     }
 
     renderNextTick(): void {

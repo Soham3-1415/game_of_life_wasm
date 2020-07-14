@@ -1,5 +1,5 @@
 import init from './wasm/game_of_life_wasm.js';
-import {Board} from './board.js';
+import {Board, InitialBoardState} from './board.js';
 import {StateManagement} from './stateManagement.js';
 import {FPSMonitor} from './fPSMonitor.js';
 
@@ -15,6 +15,12 @@ const PLAY_STRING: string = '<i class="material-icons">play_arrow</i> Play';
 const PAUSE_STRING: string = '<i class="material-icons">pause</i> Pause';
 const FPS_SMOOTHING_FACTOR: number = .95;
 const STALE_ITERATION_THRESHOLD: number = 12;
+
+const INIT_ROW_POSITIONS: number[] = [2, 2, 0, 1, 2, 2, 2];
+const INIT_COLUMN_POSITIONS: number[] = [0, 1, 1, 3, 4, 5, 6];
+const INIT_ROW_OFFSET: number = (HEIGHT - INIT_ROW_POSITIONS.length) / 2;
+const INIT_COLUMN_OFFSET: number = (WIDTH - INIT_COLUMN_POSITIONS.length) / 2;
+const INITIAL_BOARD_STATE: InitialBoardState = new InitialBoardState(INIT_ROW_POSITIONS, INIT_COLUMN_POSITIONS, INIT_ROW_OFFSET, INIT_COLUMN_OFFSET);
 
 const pausePlayBtn = document.getElementById('pausePlayBtn') as HTMLButtonElement;
 const stepBtn = document.getElementById('stepBtn') as HTMLButtonElement;
@@ -50,7 +56,7 @@ const renderLoop: FrameRequestCallback = (timestamp: DOMHighResTimeStamp): void 
 const run = async (): Promise<void> => {
     const wasm = await init();
 
-    jsBoard = new Board(wasm, HEIGHT, WIDTH, GRID_COLOR, DEAD_COLOR, ALIVE_COLOR, CELL_SIZE, canvasContext);
+    jsBoard = new Board(wasm, HEIGHT, WIDTH, GRID_COLOR, DEAD_COLOR, ALIVE_COLOR, CELL_SIZE, canvasContext, INITIAL_BOARD_STATE);
     jsBoard.drawGrid();
     jsBoard.drawAllCells();
 };
