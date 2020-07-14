@@ -1,37 +1,48 @@
 import init from './wasm/game_of_life_wasm.js';
-import {Board} from "./board.js";
-import {StateManagement} from "./stateManagement.js";
+import {Board} from './board.js';
+import {StateManagement} from './stateManagement.js';
+import {FPSMonitor} from './fPSMonitor.js';
 
 let jsBoard;
 
-const CELL_SIZE: number = 8; // px
-const WIDTH: number = 128; // cells
-const HEIGHT: number = 64; // cells
+const CELL_SIZE: number = 5; // px
+const WIDTH: number = 150; // cells
+const HEIGHT: number = 100; // cells
 const GRID_COLOR: string = '#343a40';
 const DEAD_COLOR: string = '#f8f9fa';
 const ALIVE_COLOR: string = '#17a2b8';
 const PLAY_STRING: string = '▶ Play';
 const PAUSE_STRING: string = '⏸️ Pause';
+const FPS_SMOOTHING_FACTOR: number = .95;
+const STALE_ITERATION_THRESHOLD: number = 12;
 
 const pausePlayBtn = document.getElementById('pausePlayBtn') as HTMLButtonElement;
 const stepBtn = document.getElementById('stepBtn') as HTMLButtonElement;
 const stateBtnManager = new StateManagement(pausePlayBtn, stepBtn, PLAY_STRING, PAUSE_STRING);
 const speedRange = document.getElementById('speedRange') as HTMLInputElement;
 const framerate = document.getElementById('framerate') as HTMLSpanElement;
+const fpsMonitor = new FPSMonitor(FPS_SMOOTHING_FACTOR, STALE_ITERATION_THRESHOLD);
 const gameCanvas = document.getElementById('game-canvas') as HTMLCanvasElement;
 gameCanvas.height = (CELL_SIZE + 1) * HEIGHT + 1;
 gameCanvas.width = (CELL_SIZE + 1) * WIDTH + 1;
 
 const canvasContext = gameCanvas.getContext('2d');
 
+function getTimeThreshold(rangeValue: number): DOMHighResTimeStamp {
+    return 500 - rangeValue * 5;
+}
+
 let animationFrame: number = 0;
 let lastFrame: DOMHighResTimeStamp = 0;
-let timeThreshold: number = 0;
+let timeThreshold: number = getTimeThreshold(parseInt(speedRange.value));
 const renderLoop: FrameRequestCallback = (timestamp: DOMHighResTimeStamp): void => {
     if (timestamp - lastFrame >= timeThreshold) {
         lastFrame = timestamp;
         jsBoard.renderNextTick();
     }
+
+    fpsMonitor.addTime(performance.now());
+    framerate.textContent = fpsMonitor.getFPS().toPrecision(2);
 
     animationFrame = requestAnimationFrame(renderLoop);
 };
@@ -59,7 +70,7 @@ const stepTick = (): void => {
 }
 
 const rangeUpdate = (): void => {
-    timeThreshold = 500 - parseInt(speedRange.value) * 5;
+    timeThreshold = getTimeThreshold(parseInt(speedRange.value));
 };
 
 

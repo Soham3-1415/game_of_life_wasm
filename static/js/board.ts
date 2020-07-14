@@ -36,9 +36,9 @@ export class Board {
         this.rustBoard.activate_cell(2, 2);
     }
 
-    renderNextTick():void {
+    renderNextTick(): void {
         this.rustBoard.tick();
-        this.drawAllCells();
+        this.drawUpdatedCells();
     }
 
     private toggle_x(): Uint16Array {
@@ -55,23 +55,27 @@ export class Board {
         return new Uint16Array(this.memory.buffer, ptr, updates);
     }
 
+    canvasCellPathUpdate(row: number, column: number): void {
+        let state: CellState = this.rustBoard.read_cell_state(row, column);
+
+        this.canvasContext.fillStyle = state === CellState.DEAD
+            ? this.deadColor
+            : this.aliveColor;
+
+        this.canvasContext.fillRect(
+            column * (this.cellSize + 1) + 1,
+            row * (this.cellSize + 1) + 1,
+            this.cellSize,
+            this.cellSize
+        );
+    }
+
     drawAllCells(): void {
         this.canvasContext.beginPath();
 
         for (let row = 0; row < this.height; row++) {
             for (let column = 0; column < this.width; column++) {
-                let state: CellState = this.rustBoard.read_cell_state(row, column);
-
-                this.canvasContext.fillStyle = state === CellState.DEAD
-                    ? this.deadColor
-                    : this.aliveColor;
-
-                this.canvasContext.fillRect(
-                    column * (this.cellSize + 1) + 1,
-                    row * (this.cellSize + 1) + 1,
-                    this.cellSize,
-                    this.cellSize
-                );
+                this.canvasCellPathUpdate(row, column);
             }
         }
 
@@ -79,7 +83,17 @@ export class Board {
     }
 
     drawUpdatedCells(): void {
+        this.canvasContext.beginPath();
 
+        const xPoses = this.toggle_x();
+        const yPoses = this.toggle_y();
+        for (let i = 0; i < xPoses.length; i++) {
+            const row = xPoses[i];
+            const column = yPoses[i];
+            this.canvasCellPathUpdate(row, column);
+        }
+
+        this.canvasContext.stroke();
     }
 
     drawGrid(): void {
