@@ -6,7 +6,7 @@ export class FPSMonitor {
     private staleIterations: number;
     private readonly smoothingFactor: number;
 
-    readonly defaultFPS = 60;
+    readonly defaultFPS = 0;
 
     constructor(smoothingFactor: number, staleIterationThreshold: number) {
         this.lastTime = 0;
