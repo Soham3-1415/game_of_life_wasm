@@ -1,15 +1,7 @@
 export class StateManagement {
-    private readonly pausePlay: HTMLButtonElement;
-    private readonly step: HTMLButtonElement;
-    private readonly playString: string;
-    private readonly pauseString: string;
     private playing: boolean;
 
-    constructor(pausePlay: HTMLButtonElement, step: HTMLButtonElement, playString: string, pauseString: string) {
-        this.pausePlay = pausePlay;
-        this.step = step;
-        this.playString = playString;
-        this.pauseString = pauseString;
+    constructor(private readonly pausePlay: HTMLButtonElement, private readonly step: HTMLButtonElement, private readonly playString: string, private readonly pauseString: string) {
         this.playing = false;
     }
 

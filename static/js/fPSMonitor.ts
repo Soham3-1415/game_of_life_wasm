@@ -2,18 +2,14 @@ export class FPSMonitor {
     private lastTime: DOMHighResTimeStamp;
     private avgFPS: number;
     private cachedFPS: number;
-    private readonly staleIterationThreshold: number;
     private staleIterations: number;
-    private readonly smoothingFactor: number;
 
     readonly defaultFPS = 0;
 
-    constructor(smoothingFactor: number, staleIterationThreshold: number) {
+    constructor(private readonly smoothingFactor: number, private readonly staleIterationThreshold: number) {
         this.lastTime = 0;
         this.avgFPS = this.defaultFPS;
         this.cachedFPS = this.avgFPS;
-        this.smoothingFactor = smoothingFactor;
-        this.staleIterationThreshold = staleIterationThreshold;
         this.staleIterations = 0;
     }
 
