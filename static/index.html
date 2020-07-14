@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
     <script src="./bootstrap/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="./css/styles.css">
@@ -18,12 +18,18 @@
         </div>
         <div class="row">
             <div class="form-group text-center">
-                <button class="btn btn-lg btn-primary" id="stateBtn">▶ Play</button>
+                <button class="btn btn-lg btn-primary" id="pausePlayBtn">▶ Play</button>
+                <button class="btn btn-lg btn-primary" id="stepBtn">⏭ Step</button>
             </div>
             <div class="form-group">
-                <label for="speedRange" class="text-light text-left"><strong>speed</strong></label>
+                <label for="speedRange" class="col-1 text-light text-left">speed</label>
+                <span class="col-1 offset-9 offset-lg-10 text-light text-right">fps: <span id="framerate"></span></span>
                 <input type="range" class="form-range" id="speedRange">
             </div>
+        </div>
+        <div class="row text-center">
+            <span class="text-light">Source code: <a class="text-light"
+                                                     href="https://github.com/Soham3-1415/game_of_life_wasm">https://github.com/Soham3-1415/game_of_life_wasm</a></span>
         </div>
     </div>
 </div>

@@ -1,3 +1,2 @@
 pkg/
-app.js
-board.js
+*.js
