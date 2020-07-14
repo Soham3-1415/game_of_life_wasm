@@ -1,4 +1,4 @@
-import init from './wasm/game_of_life_wasm.js';
+import init, {CellState} from './wasm/game_of_life_wasm.js';
 import {Board} from './board.js';
 import {StateManagement} from './stateManagement.js';
 import {FPSMonitor} from './fPSMonitor.js';
@@ -53,7 +53,7 @@ const renderLoop: FrameRequestCallback = (timestamp: DOMHighResTimeStamp): void 
 const run = async (): Promise<void> => {
     const wasm = await init();
 
-    jsBoard = new Board(wasm, HEIGHT, WIDTH, GRID_COLOR, DEAD_COLOR, ALIVE_COLOR, CELL_SIZE, canvasContext);
+    jsBoard = new Board(wasm.memory, HEIGHT, WIDTH, GRID_COLOR, DEAD_COLOR, ALIVE_COLOR, CELL_SIZE, canvasContext);
     jsBoard.drawGrid();
     initBoard();
 };
@@ -65,9 +65,49 @@ const initBoard = (): void => {
     }
     jsBoard.initBoard(state);
     jsBoard.drawAllCells();
-}
+};
 
-const pausePlayToggle = (): void => {
+const getMouseEventColumn = (event: MouseEvent): number => {
+    const boundingRect = gameCanvas.getBoundingClientRect();
+    const scaleX = gameCanvas.width / boundingRect.width;
+    const canvasLeft = (event.clientX - boundingRect.left) * scaleX;
+    return Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), WIDTH - 1);
+};
+
+const getMouseEventRow = (event: MouseEvent): number => {
+    const boundingRect = gameCanvas.getBoundingClientRect();
+    const scaleY = gameCanvas.height / boundingRect.height;
+    const canvasTop = (event.clientY - boundingRect.top) * scaleY;
+    return Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), HEIGHT - 1);
+};
+
+
+let paintCellState: CellState = null;
+
+gameCanvas.onmousedown = (event: MouseEvent): void => {
+    const row = getMouseEventRow(event);
+    const column = getMouseEventColumn(event);
+
+    jsBoard.setPaintCellState(row, column);
+};
+
+gameCanvas.onmousemove = (event: MouseEvent): void => {
+    if (paintCellState === null) {
+        const row = getMouseEventRow(event);
+        const column = getMouseEventColumn(event);
+
+        jsBoard.immediateCellSet(row, column);
+    }
+};
+
+window.onmouseup = (): void => {
+    jsBoard.unsetPaintCellState();
+};
+
+
+window.onhashchange = initBoard;
+
+pausePlayBtn.onclick = (): void => {
     if (stateBtnManager.isPlaying()) {
         cancelAnimationFrame(animationFrame);
     } else {
@@ -77,17 +117,12 @@ const pausePlayToggle = (): void => {
     stateBtnManager.toggle_pause_play();
 };
 
-const stepTick = (): void => {
+stepBtn.onclick = (): void => {
     jsBoard.renderNextTick();
-}
-
-const rangeUpdate = (): void => {
-    timeThreshold = getTimeThreshold(parseInt(speedRange.value));
 };
 
-window.onhashchange = initBoard;
-pausePlayBtn.onclick = pausePlayToggle;
-stepBtn.onclick = stepTick;
-speedRange.oninput = rangeUpdate;
+speedRange.oninput = (): void => {
+    timeThreshold = getTimeThreshold(parseInt(speedRange.value));
+};
 
 run().catch(() => console.log('Error running app.'));
