@@ -20,11 +20,11 @@ export class StateManagement {
     toggle_pause_play(): void {
         if (this.playing) {
             this.playing = false;
-            this.pausePlay.textContent = this.playString;
+            this.pausePlay.innerHTML = this.playString;
             this.step.disabled = false;
         } else {
             this.playing = true;
-            this.pausePlay.textContent = this.pauseString;
+            this.pausePlay.innerHTML = this.pauseString;
             this.step.disabled = true;
         }
     }
