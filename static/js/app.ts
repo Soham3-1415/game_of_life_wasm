@@ -11,8 +11,8 @@ const HEIGHT: number = 100; // cells
 const GRID_COLOR: string = '#343a40';
 const DEAD_COLOR: string = '#f8f9fa';
 const ALIVE_COLOR: string = '#17a2b8';
-const PLAY_STRING: string = '▶ Play';
-const PAUSE_STRING: string = '⏸️ Pause';
+const PLAY_STRING: string = '<i class="material-icons">play_arrow</i> Play';
+const PAUSE_STRING: string = '<i class="material-icons">pause</i> Pause';
 const FPS_SMOOTHING_FACTOR: number = .95;
 const STALE_ITERATION_THRESHOLD: number = 12;
 
