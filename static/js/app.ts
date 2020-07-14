@@ -1,26 +1,23 @@
 import init from './wasm/game_of_life_wasm.js';
-import {Board, InitialBoardState} from './board.js';
+import {Board} from './board.js';
 import {StateManagement} from './stateManagement.js';
 import {FPSMonitor} from './fPSMonitor.js';
+import {
+    ALIVE_COLOR,
+    BOARD_INIT_STATES,
+    CELL_SIZE,
+    DEAD_COLOR,
+    DEFAULT_BOARD_STATE,
+    FPS_SMOOTHING_FACTOR,
+    GRID_COLOR,
+    HEIGHT,
+    PAUSE_STRING,
+    PLAY_STRING,
+    STALE_ITERATION_THRESHOLD,
+    WIDTH,
+} from "./boardinfo.js";
 
 let jsBoard;
-
-const CELL_SIZE: number = 5; // px
-const WIDTH: number = 150; // cells
-const HEIGHT: number = 100; // cells
-const GRID_COLOR: string = '#343a40';
-const DEAD_COLOR: string = '#f8f9fa';
-const ALIVE_COLOR: string = '#17a2b8';
-const PLAY_STRING: string = '<i class="material-icons">play_arrow</i> Play';
-const PAUSE_STRING: string = '<i class="material-icons">pause</i> Pause';
-const FPS_SMOOTHING_FACTOR: number = .95;
-const STALE_ITERATION_THRESHOLD: number = 12;
-
-const INIT_ROW_POSITIONS: number[] = [2, 2, 0, 1, 2, 2, 2];
-const INIT_COLUMN_POSITIONS: number[] = [0, 1, 1, 3, 4, 5, 6];
-const INIT_ROW_OFFSET: number = (HEIGHT - INIT_ROW_POSITIONS.length) / 2;
-const INIT_COLUMN_OFFSET: number = (WIDTH - INIT_COLUMN_POSITIONS.length) / 2;
-const INITIAL_BOARD_STATE: InitialBoardState = new InitialBoardState(INIT_ROW_POSITIONS, INIT_COLUMN_POSITIONS, INIT_ROW_OFFSET, INIT_COLUMN_OFFSET);
 
 const pausePlayBtn = document.getElementById('pausePlayBtn') as HTMLButtonElement;
 const stepBtn = document.getElementById('stepBtn') as HTMLButtonElement;
@@ -56,10 +53,19 @@ const renderLoop: FrameRequestCallback = (timestamp: DOMHighResTimeStamp): void 
 const run = async (): Promise<void> => {
     const wasm = await init();
 
-    jsBoard = new Board(wasm, HEIGHT, WIDTH, GRID_COLOR, DEAD_COLOR, ALIVE_COLOR, CELL_SIZE, canvasContext, INITIAL_BOARD_STATE);
+    jsBoard = new Board(wasm, HEIGHT, WIDTH, GRID_COLOR, DEAD_COLOR, ALIVE_COLOR, CELL_SIZE, canvasContext);
     jsBoard.drawGrid();
-    jsBoard.drawAllCells();
+    initBoard();
 };
+
+const initBoard = (): void => {
+    let state = BOARD_INIT_STATES[location.hash];
+    if (state === undefined) {
+        state = DEFAULT_BOARD_STATE;
+    }
+    jsBoard.initBoard(state);
+    jsBoard.drawAllCells();
+}
 
 const pausePlayToggle = (): void => {
     if (stateBtnManager.isPlaying()) {
@@ -79,7 +85,7 @@ const rangeUpdate = (): void => {
     timeThreshold = getTimeThreshold(parseInt(speedRange.value));
 };
 
-
+window.onhashchange = initBoard;
 pausePlayBtn.onclick = pausePlayToggle;
 stepBtn.onclick = stepTick;
 speedRange.oninput = rangeUpdate;

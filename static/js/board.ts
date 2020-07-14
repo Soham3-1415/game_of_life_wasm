@@ -18,6 +18,7 @@ export class InitialBoardState {
     }
 
     init(rustBoard: CellCollection): void {
+        rustBoard.reset();
         for (let i = 0; i < this.rowPositions.length; i++) {
             rustBoard.activate_cell(this.rowPositions[i] + this.rowOffset, this.columnPositions[i] + this.columnOffset);
         }
@@ -37,8 +38,7 @@ export class Board {
     private readonly cellSize: number;
     private readonly canvasContext: CanvasRenderingContext2D;
 
-    constructor(wasm: InitOutput, height: number, width: number, gridColor: string, deadColor: string, aliveColor: string, cellSize: number, canvasContext: CanvasRenderingContext2D,
-                initialBoardState: InitialBoardState = InitialBoardState.empty()) {
+    constructor(wasm: InitOutput, height: number, width: number, gridColor: string, deadColor: string, aliveColor: string, cellSize: number, canvasContext: CanvasRenderingContext2D) {
         this.memory = wasm.memory;
 
         this.width = width;
@@ -53,8 +53,10 @@ export class Board {
 
         this.cellSize = cellSize;
         this.canvasContext = canvasContext;
+    }
 
-        initialBoardState.init(this.rustBoard);
+    initBoard(state: InitialBoardState): void {
+        state.init(this.rustBoard);
     }
 
     renderNextTick(): void {
