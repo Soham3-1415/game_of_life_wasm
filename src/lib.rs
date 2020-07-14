@@ -138,6 +138,12 @@ pub enum CellState {
 
 #[wasm_bindgen]
 impl CellCollection {
+	pub fn reset(&mut self) {
+		for cell in &mut self.cells {
+			*cell = 0;
+		}
+	}
+
 	pub fn new(height: u16, width: u16) -> Self {
 		utils::set_panic_hook();
 

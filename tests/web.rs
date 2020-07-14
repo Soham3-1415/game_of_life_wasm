@@ -11,8 +11,7 @@ use game_of_life_wasm::CellCollection;
 
 wasm_bindgen_test_configure!(run_in_browser);
 
-#[wasm_bindgen_test]
-fn simple_tick_test() {
+fn simple_cell_collection() -> CellCollection {
 	let mut game = CellCollection::new(20, 20);
 	let width = game.width();
 	let height = game.height();
@@ -24,11 +23,20 @@ fn simple_tick_test() {
 	for row in 0..height {
 		game.kill_cell(row, 2);
 	}
+
+	game
+}
+
+#[wasm_bindgen_test]
+fn simple_tick_test() {
+	let mut game = simple_cell_collection();
 	for _ in 0..5 {
 		game.tick();
 	}
 
 	let mut expected_game = CellCollection::new(20, 20);
+	let width = game.width();
+	let height = game.height();
 	for row in 0..height {
 		for column in 0..width {
 			expected_game.activate_cell(row, column);
@@ -39,6 +47,16 @@ fn simple_tick_test() {
 			expected_game.kill_cell(row, column);
 		}
 	}
+
+	assert_eq!(expected_game, game)
+}
+
+#[wasm_bindgen_test]
+fn simple_reset_test() {
+	let mut game = simple_cell_collection();
+	game.reset();
+
+	let mut expected_game = CellCollection::new(20, 20);
 
 	assert_eq!(expected_game, game)
 }

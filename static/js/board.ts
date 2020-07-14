@@ -1,39 +1,43 @@
-import {CellCollection, CellState, InitOutput} from './wasm/game_of_life_wasm.js';
+import {CellCollection, CellState} from './wasm/game_of_life_wasm.js';
+
+export class InitialBoardState {
+    constructor(private readonly rowPositions: number[], private readonly columnPositions: number[], private readonly rowOffset: number, private readonly columnOffset: number) {
+    }
+
+    static empty(): InitialBoardState {
+        return new InitialBoardState([], [], 0, 0);
+    }
+
+    init(rustBoard: CellCollection): void {
+        rustBoard.reset();
+        for (let i = 0; i < this.rowPositions.length; i++) {
+            rustBoard.activate_cell(this.rowPositions[i] + this.rowOffset, this.columnPositions[i] + this.columnOffset);
+        }
+    }
+}
 
 export class Board {
-    private readonly memory: WebAssembly.Memory;
-
-    private rustBoard: CellCollection;
+    private readonly rustBoard: CellCollection;
     private cells: Uint8Array;
-    private readonly width: number;
-    private readonly height: number;
-    private readonly gridColor: string;
-    private readonly deadColor: string;
-    private readonly aliveColor: string;
-    private readonly cellSize: number;
-    private readonly canvasContext: CanvasRenderingContext2D;
+    private paintCellState: CellState;
 
-    constructor(wasm: InitOutput, height: number, width: number, gridColor: string, deadColor: string, aliveColor: string, cellSize: number, canvasContext: CanvasRenderingContext2D) {
-        this.memory = wasm.memory;
-
-        this.width = width;
-        this.height = height;
-
+    constructor(
+        private readonly memory: WebAssembly.Memory,
+        private readonly height: number,
+        private readonly width: number,
+        private readonly gridColor: string,
+        private readonly deadColor: string,
+        private readonly aliveColor: string,
+        private readonly cellSize: number,
+        private readonly canvasContext: CanvasRenderingContext2D
+    ) {
         this.rustBoard = CellCollection.new(this.height, this.width);
         this.cells = new Uint8Array(this.memory.buffer, this.rustBoard.cells(), this.width * this.height);
+        this.paintCellState = null;
+    }
 
-        this.gridColor = gridColor;
-        this.deadColor = deadColor;
-        this.aliveColor = aliveColor;
-
-        this.cellSize = cellSize;
-        this.canvasContext = canvasContext;
-
-        this.rustBoard.activate_cell(0, 2);
-        this.rustBoard.activate_cell(1, 0);
-        this.rustBoard.activate_cell(1, 2);
-        this.rustBoard.activate_cell(2, 1);
-        this.rustBoard.activate_cell(2, 2);
+    initBoard(state: InitialBoardState): void {
+        state.init(this.rustBoard);
     }
 
     renderNextTick(): void {
@@ -55,7 +59,7 @@ export class Board {
         return new Uint16Array(this.memory.buffer, ptr, updates);
     }
 
-    canvasCellPathUpdate(row: number, column: number): void {
+    private canvasCellPathUpdate(row: number, column: number): void {
         let state: CellState = this.rustBoard.read_cell_state(row, column);
 
         this.canvasContext.fillStyle = state === CellState.DEAD
@@ -68,6 +72,24 @@ export class Board {
             this.cellSize,
             this.cellSize
         );
+    }
+
+    immediateCellSet(row: number, column: number): void {
+        if (this.paintCellState !== null) {
+            this.rustBoard.write_cell_state(row, column, this.paintCellState);
+            this.canvasContext.beginPath();
+            this.canvasCellPathUpdate(row, column);
+            this.canvasContext.stroke();
+        }
+    }
+
+    setPaintCellState(row: number, column: number): void {
+        this.paintCellState = this.rustBoard.read_cell_state(row, column) === CellState.ALIVE ? CellState.DEAD : CellState.ALIVE;
+        this.immediateCellSet(row, column);
+    }
+
+    unsetPaintCellState(): void {
+        this.paintCellState = null;
     }
 
     drawAllCells(): void {
