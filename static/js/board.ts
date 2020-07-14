@@ -27,7 +27,7 @@ export class InitialBoardState {
 export class Board {
     private readonly memory: WebAssembly.Memory;
 
-    private rustBoard: CellCollection;
+    private readonly rustBoard: CellCollection;
     private cells: Uint8Array;
     private readonly width: number;
     private readonly height: number;
