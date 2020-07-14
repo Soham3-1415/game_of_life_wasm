@@ -56,7 +56,7 @@ fn simple_reset_test() {
 	let mut game = simple_cell_collection();
 	game.reset();
 
-	let mut expected_game = CellCollection::new(20, 20);
+	let expected_game = CellCollection::new(20, 20);
 
 	assert_eq!(expected_game, game)
 }
