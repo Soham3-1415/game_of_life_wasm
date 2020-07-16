@@ -65,6 +65,14 @@ const initBoard = (): void => {
     }
     jsBoard.initBoard(state);
     jsBoard.drawAllCells();
+
+    gameCanvas.onmousedown = gameCanvasOnmousedown;
+    gameCanvas.onmousemove = gameCanvasOnmousemove;
+    window.onmouseup = windowOnmouseup;
+    window.onhashchange = initBoard;
+    pausePlayBtn.onclick = pausePlayBtnOnClick;
+    stepBtn.onclick = stepBtnOnClick;
+    speedRange.oninput = speedRangeOnInput;
 };
 
 const getMouseEventColumn = (event: MouseEvent): number => {
@@ -84,14 +92,14 @@ const getMouseEventRow = (event: MouseEvent): number => {
 
 let paintCellState: CellState = null;
 
-gameCanvas.onmousedown = (event: MouseEvent): void => {
+const gameCanvasOnmousedown = (event: MouseEvent): void => {
     const row = getMouseEventRow(event);
     const column = getMouseEventColumn(event);
 
     jsBoard.setPaintCellState(row, column);
 };
 
-gameCanvas.onmousemove = (event: MouseEvent): void => {
+const gameCanvasOnmousemove = (event: MouseEvent): void => {
     if (paintCellState === null) {
         const row = getMouseEventRow(event);
         const column = getMouseEventColumn(event);
@@ -100,14 +108,11 @@ gameCanvas.onmousemove = (event: MouseEvent): void => {
     }
 };
 
-window.onmouseup = (): void => {
+const windowOnmouseup = (): void => {
     jsBoard.unsetPaintCellState();
 };
 
-
-window.onhashchange = initBoard;
-
-pausePlayBtn.onclick = (): void => {
+const pausePlayBtnOnClick = (): void => {
     if (stateBtnManager.isPlaying()) {
         cancelAnimationFrame(animationFrame);
     } else {
@@ -117,11 +122,11 @@ pausePlayBtn.onclick = (): void => {
     stateBtnManager.toggle_pause_play();
 };
 
-stepBtn.onclick = (): void => {
+const stepBtnOnClick = (): void => {
     jsBoard.renderNextTick();
 };
 
-speedRange.oninput = (): void => {
+const speedRangeOnInput = (): void => {
     timeThreshold = getTimeThreshold(parseInt(speedRange.value));
 };
 
