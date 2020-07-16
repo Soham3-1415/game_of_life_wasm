@@ -2,8 +2,9 @@ import {InitialBoardState} from "./board.js";
 
 export const CELL_SIZE: number = 5; // px
 
-export const WIDTH: number = 150; // cells
-export const HEIGHT: number = 100; // cells
+const controls = document.getElementById('controls');
+export const WIDTH: number = Math.floor(controls.clientWidth / (CELL_SIZE + 1)); // cells
+export const HEIGHT: number = Math.floor((window.innerHeight - controls.clientHeight) / (CELL_SIZE + 1 + 1 /*Why the extra 1? I don't know, but it seems to work well enough.*/)); // cells
 
 export const GRID_COLOR: string = '#343a40';
 export const DEAD_COLOR: string = '#f8f9fa';
