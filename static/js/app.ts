@@ -66,7 +66,7 @@ const initBoard = (): void => {
     jsBoard.initBoard(state);
     jsBoard.drawAllCells();
 
-    gameCanvas.onmousedown = gameCnavasOnmousedown;
+    gameCanvas.onmousedown = gameCanvasOnmousedown;
     gameCanvas.onmousemove = gameCanvasOnmousemove;
     window.onmouseup = windowOnmouseup;
     window.onhashchange = initBoard;
@@ -92,7 +92,7 @@ const getMouseEventRow = (event: MouseEvent): number => {
 
 let paintCellState: CellState = null;
 
-const gameCnavasOnmousedown= (event: MouseEvent): void => {
+const gameCanvasOnmousedown = (event: MouseEvent): void => {
     const row = getMouseEventRow(event);
     const column = getMouseEventColumn(event);
 
