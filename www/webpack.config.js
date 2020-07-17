@@ -9,7 +9,6 @@ const path = require('path');
 module.exports = {
     entry: {
         app: './src/bundles/app.js',
-        lib: './src/bundles/lib.js',
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -25,19 +24,9 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
-            chunks: ['app', 'lib'],
+            chunks: ['app'],
             filename: 'index.html',
             template: './src/index.html'
-        }),
-        new HtmlWebpackPlugin({
-            chunks: ['lib'],
-            filename: 'errors/404.html',
-            template: './src/errors/404.html'
-        }),
-        new HtmlWebpackPlugin({
-            chunks: ['lib'],
-            filename: 'errors/50x.html',
-            template: './src/errors/50x.html'
         }),
         new CompressionPlugin({
             filename: '[path].br[query]',
