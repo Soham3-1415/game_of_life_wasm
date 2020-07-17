@@ -1,5 +1,5 @@
 {
-  "name": "game-of-life-wasm",
+  "name": "game_of_life_wasm",
   "version": "0.1.0",
   "description": "Conway's game of life in wasm compiled from Rust",
   "main": "index.js",
