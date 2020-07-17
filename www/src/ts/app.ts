@@ -1,5 +1,5 @@
-import * as wasm from 'game-of-life-wasm';
-import {memory} from 'game-of-life-wasm/game_of_life_wasm_bg';
+import * as wasm from 'game_of_life_wasm';
+import {memory} from 'game_of_life_wasm/game_of_life_wasm_bg';
 import {Board} from './board';
 import {StateManagement} from './stateManagement';
 import {FPSMonitor} from './fPSMonitor';

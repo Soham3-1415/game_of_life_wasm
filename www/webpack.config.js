@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const BrotliGzipPlugin = require('brotli-gzip-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 const path = require('path');
 
 module.exports = {
@@ -39,13 +39,13 @@ module.exports = {
             filename: 'errors/50x.html',
             template: './src/errors/50x.html'
         }),
-        new BrotliGzipPlugin({
-            asset: '[path].br[query]',
-            algorithm: 'brotli',
+        new CompressionPlugin({
+            filename: '[path].br[query]',
+            algorithm: 'brotliCompress',
             test: /\.(js|css|html|wasm)$/,
         }),
-        new BrotliGzipPlugin({
-            asset: '[path].gz[query]',
+        new CompressionPlugin({
+            filename: '[path].gz[query]',
             algorithm: 'gzip',
             test: /\.(js|css|html|wasm)$/,
         }),

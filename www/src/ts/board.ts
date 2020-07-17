@@ -1,4 +1,4 @@
-import {CellCollection, CellState} from 'game-of-life-wasm';
+import {CellCollection, CellState} from 'game_of_life_wasm';
 
 export class InitialBoardState {
     constructor(private readonly rowPositions: number[], private readonly columnPositions: number[], private readonly rowOffset: number, private readonly columnOffset: number) {
