@@ -60,6 +60,18 @@ module.exports = {
                     'css-loader',
                 ]
             },
+            {
+                test: /\.(ico|png|svg|jpg?g|gif|webp)$/,
+                use: [
+                    'file-loader',
+                ],
+            },
+            {
+                test: /\.(woff|woff2|eot|ttf|otf)$/,
+                use: [
+                    'file-loader',
+                ],
+            }
         ]
     },
 };
