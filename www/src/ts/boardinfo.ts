@@ -1,4 +1,4 @@
-import {InitialBoardState} from './board.js';
+import {InitialBoardState} from './board';
 
 export const CELL_SIZE: number = 5; // px
 

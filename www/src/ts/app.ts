@@ -1,7 +1,8 @@
-import init, {CellState} from './wasm/game_of_life_wasm.js';
-import {Board} from './board.js';
-import {StateManagement} from './stateManagement.js';
-import {FPSMonitor} from './fPSMonitor.js';
+import * as wasm from 'game_of_life_wasm';
+import {memory} from 'game_of_life_wasm/game_of_life_wasm_bg';
+import {Board} from './board';
+import {StateManagement} from './stateManagement';
+import {FPSMonitor} from './fPSMonitor';
 import {
     ALIVE_COLOR,
     BOARD_INIT_STATES,
@@ -15,7 +16,7 @@ import {
     PLAY_STRING,
     STALE_ITERATION_THRESHOLD,
     WIDTH,
-} from "./boardinfo.js";
+} from './boardinfo';
 
 let jsBoard;
 
@@ -50,14 +51,6 @@ const renderLoop: FrameRequestCallback = (timestamp: DOMHighResTimeStamp): void 
     animationFrame = requestAnimationFrame(renderLoop);
 };
 
-const run = async (): Promise<void> => {
-    const wasm = await init();
-
-    jsBoard = new Board(wasm.memory, HEIGHT, WIDTH, GRID_COLOR, DEAD_COLOR, ALIVE_COLOR, CELL_SIZE, canvasContext);
-    jsBoard.drawGrid();
-    initBoard();
-};
-
 const initBoard = (): void => {
     let state = BOARD_INIT_STATES[location.hash];
     if (state === undefined) {
@@ -89,8 +82,7 @@ const getMouseEventRow = (event: MouseEvent): number => {
     return Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), HEIGHT - 1);
 };
 
-
-let paintCellState: CellState = null;
+let paintCellState: wasm.CellState = null;
 
 const gameCanvasOnmousedown = (event: MouseEvent): void => {
     const row = getMouseEventRow(event);
@@ -130,4 +122,6 @@ const speedRangeOnInput = (): void => {
     timeThreshold = getTimeThreshold(parseInt(speedRange.value));
 };
 
-run().catch(() => console.log('Error running app.'));
+jsBoard = new Board(memory, HEIGHT, WIDTH, GRID_COLOR, DEAD_COLOR, ALIVE_COLOR, CELL_SIZE, canvasContext);
+jsBoard.drawGrid();
+initBoard();
