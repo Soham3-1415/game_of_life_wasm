@@ -1,13 +1,11 @@
-language: rust
 sudo: false
-
-cache: cargo
 
 matrix:
   include:
 
     # Builds with wasm-pack.
-    - rust: beta
+    - language: rust
+      rust: beta
       env: RUST_BACKTRACE=1
       addons:
         firefox: latest
@@ -17,3 +15,13 @@ matrix:
       script:
         - wasm-pack build --target web
         - wasm-pack test --chrome --firefox --headless
+
+    # Builds with webpack.
+    - language: node_js
+      node_js: "10"
+      before_script:
+        - cd ./www
+        - npm install
+        - npm audit fix
+      script:
+        - ./node_modules/.bin/webpack

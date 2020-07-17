@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "../js/",
+    "moduleResolution": "Node",
+    "target": "ES6"
+  }
+}
