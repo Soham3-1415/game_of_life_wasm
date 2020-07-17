@@ -1,27 +1,24 @@
-sudo: false
+os: linux
+dist: focal
 
-matrix:
+language: [rust, node_js]
+
+jobs:
   include:
 
-    # Builds with wasm-pack.
-    - language: rust
-      rust: beta
-      env: RUST_BACKTRACE=1
-      addons:
-        firefox: latest
-        chrome: stable
-      before_script:
-        - curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -f
-      script:
-        - wasm-pack build --target web
-        - wasm-pack test --chrome --firefox --headless
-
-    # Builds with webpack.
-    - language: node_js
-      node_js: "10"
-      before_script:
-        - cd ./www
-        - npm install
-        - npm audit fix
-      script:
-        - ./node_modules/.bin/webpack
+    # Builds with wasm-pack and webpack.
+    rust: beta
+    node_js: "10"
+    env: RUST_BACKTRACE=1
+    addons:
+      firefox: latest
+      chrome: stable
+    before_script:
+      - curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -f
+    script:
+      - wasm-pack build
+      - wasm-pack test --chrome --firefox --headless
+      - cd ./www
+      - npm install
+      - npm audit fix
+      - ./node_modules/.bin/webpack
